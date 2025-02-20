@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { TypeWriter } from './TypeWriter';
 
 jest.setTimeout(10000);
