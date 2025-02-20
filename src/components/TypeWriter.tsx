@@ -10,7 +10,7 @@ interface TypeWriterProps {
   speed?: number;
   onComplete?: () => void;
   className?: string;
-  renderComponent?: (props: { displayText: string }) => React.ReactNode;
+  renderComponent?: (props: { displayText: string | React.ReactNode }) => React.ReactNode;
 }
 
 export const TypeWriter: React.FC<TypeWriterProps> = ({
