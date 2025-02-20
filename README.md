@@ -13,14 +13,14 @@ A Next.js application that implements a chat interface with a typewriter effect 
 ## Getting Started
 
 1. Install dependencies:
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 2. Run the development server:
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -28,25 +28,25 @@ npm run dev
 
 To run the tests:
 
-\`\`\`bash
+```bash
 npm test
-\`\`\`
+```
 
 To run tests in watch mode:
 
-\`\`\`bash
+```bash
 npm run test:watch
-\`\`\`
+```
 
 ## Project Structure
 
-- \`/src/components/\` - React components
-  - \`TypeWriter.tsx\` - Typewriter effect component
-  - \`Chat.tsx\` - Main chat interface
-- \`/src/app/\` - Next.js app directory
-  - \`api/chat/\` - SSE endpoint for chat
-  - \`page.tsx\` - Main page
-  - \`globals.css\` - Global styles
+- `/src/components/` - React components
+  - `TypeWriter.tsx` - Typewriter effect component
+  - `Chat.tsx` - Main chat interface
+- `/src/app/` - Next.js app directory
+  - `api/chat/` - SSE endpoint for chat
+  - `page.tsx` - Main page
+  - `globals.css` - Global styles
 
 ## Implementation Details
 
