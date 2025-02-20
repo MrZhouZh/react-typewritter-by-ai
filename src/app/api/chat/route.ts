@@ -1,40 +1,68 @@
 import { NextRequest } from 'next/server';
 
+export const runtime = 'edge';
+
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const message = searchParams.get('message');
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const message = searchParams.get('message');
 
-  // Set up SSE headers
-  const encoder = new TextEncoder();
-  const stream = new TransformStream();
-  const writer = stream.writable.getWriter();
-
-  // Mock response generator - replace this with your actual AI/chat service
-  const mockResponse = async () => {
-    const response = `Thank you for your message: "${message}". This is a mock response that demonstrates the typewriter effect.`;
-
-    for (const char of response) {
-      await new Promise(resolve => setTimeout(resolve, 50));
-      const data = {
-        type: 'token',
-        content: char
-      };
-      await writer.write(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+    if (!message) {
+      return new Response('Message parameter is required', { status: 400 });
     }
 
-    // Send done event
-    await writer.write(encoder.encode(`event: done\ndata: {}\n\n`));
-    await writer.close();
-  };
+    // Set up SSE
+    const encoder = new TextEncoder();
+    const stream = new TransformStream();
+    const writer = stream.writable.getWriter();
 
-  // Start sending the response
-  mockResponse();
+    // Start the response immediately
+    const response = new Response(stream.readable, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache, no-transform',
+        'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no',
+      },
+    });
 
-  return new Response(stream.readable, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-    },
-  });
+    // Mock response generator
+    const mockResponse = async () => {
+      try {
+        const response = `Thank you for your message: "${message}". This is a mock response that demonstrates the typewriter effect.`;
+
+        // Send an initial message immediately
+        const initialData = {
+          type: 'token',
+          content: response[0]
+        };
+        await writer.write(encoder.encode(`data: ${JSON.stringify(initialData)}\n\n`));
+
+        // Send the rest of the message
+        for (let i = 1; i < response.length; i++) {
+          await new Promise(resolve => setTimeout(resolve, 30));
+          const data = {
+            type: 'token',
+            content: response[i]
+          };
+          await writer.write(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+        }
+
+        // Send done event
+        await writer.write(encoder.encode(`event: done\ndata: {}\n\n`));
+      } catch (error) {
+        console.error('Error in mockResponse:', error);
+      } finally {
+        await writer.close();
+      }
+    };
+
+    // Start sending the response asynchronously
+    mockResponse().catch(console.error);
+
+    return response;
+  } catch (error) {
+    console.error('Error in GET handler:', error);
+    return new Response('Internal Server Error', { status: 500 });
+  }
 }
